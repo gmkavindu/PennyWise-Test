@@ -4,7 +4,6 @@ import SalaryForm from './SalaryForm'; // Import SalaryForm
 import BudgetList from './BudgetList';
 import Navbar from '../Navbar';
 import BudgetChart from './BudgetChart';
-import { FaTimes } from 'react-icons/fa';
 import { 
   fetchBudgets, 
   addBudget, 
@@ -37,8 +36,6 @@ const BudgetManager = () => {
   const [period, setPeriod] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [customPeriod, setCustomPeriod] = useState(null);
-  const [showInitialPopup, setShowInitialPopup] = useState(false);
-  const [addSalary, setAddSalary] = useState(false); 
   
   // Ref to hold the error message container
   const errorMessageRef = useRef(null);
@@ -57,8 +54,7 @@ const BudgetManager = () => {
         const data = await fetchBudgets();
         setBudgets(data);
         if (data.length === 0) {
-
-          setNoBudgetMessage('No budget has been set yet. You can add a budget to start tracking your expenses.');
+          setNoBudgetMessage('No budget has been set yet. You can add a budget to start tracking your expenses, but setting a salary is optional. Feel free to continue using the app without setting a salary.');
         } else {
           setNoBudgetMessage('');
         }
@@ -97,18 +93,6 @@ const BudgetManager = () => {
         setExpirationDate(salaryData.expirationDate);
         setPeriod(salaryData.period);
         setStartDate(salaryData.startDate);
-
-      // Check if user has previously made a choice
-        const userChoice = localStorage.getItem('userChoice');
-
-      // Show initial popup if no user choice is made and salary is 0 and no budgets exist
-        if (!userChoice && salaryData.salary === 0 && budgets.length === 0) {
-          setShowInitialPopup(true);
-        } else {
-        // If user has made a choice, or if there are budgets, do not show the initial popup
-          setShowInitialPopup(false);
-          setAddSalary(salaryData.salary > 0);
-        }
       } catch (error) {
         console.error('Error fetching salary:', error);
       }
@@ -116,7 +100,6 @@ const BudgetManager = () => {
 
     fetchSalaryData();
   }, [budgets]);
-
 
   useEffect(() => {
     // Calculate remaining salary whenever budgets or salary change
@@ -290,6 +273,7 @@ const BudgetManager = () => {
       setShowSalaryPopup(false); // Close salary popup if clicked outside
     }
   };
+
   const handleResetBudgetsClick = () => {
     setShowConfirmReset(true); // Show confirmation dialog
   };
@@ -340,58 +324,10 @@ const BudgetManager = () => {
   };
 
   const expensesWithBudget = expenses.filter(expense => expense.budget !== null);
-  const handleInitialPopupChoice = (choice) => {
-    localStorage.setItem('userChoice', choice);
-    if (choice === 'addSalary') {
-      setShowSalaryPopup(true);
-      setAddSalary(true);
-    } else {
-      setAddSalary(false);
-    }
-    setShowInitialPopup(false);
-  };
-  
 
   return (
     <div className={`${theme === 'light' ? 'bg-white text-gray-900' : 'bg-gray-800 text-white'} min-h-screen transition-colors duration-500 ease-in-out`}>
       <Navbar theme={theme} />
-      {showInitialPopup && (
-        <div
-          className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-75 bg-black"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowInitialPopup(false); // Close the popup if the user clicks outside the content
-            }
-          }}
-        >
-          <div
-            className={`p-6 rounded-lg shadow-md w-full sm:w-96 relative ${theme === 'light' ? 'bg-white border-black border-2' : 'bg-gray-900 border-gray-700'}`}
-          >
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-              onClick={() => setShowInitialPopup(false)}
-            >
-              <FaTimes size={20} />
-            </button>
-            <p className="mb-4">Do you want to add a salary?</p>
-            <div className="flex justify-between">
-              
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
-                onClick={() => handleInitialPopupChoice('noSalary')}
-              >
-                Continue Without Salary
-              </button>
-              <button
-                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
-                onClick={() => handleInitialPopupChoice('addSalary')}
-              >
-                Add Salary
-              </button>
-            </div>
-          </div>
-        </div>
-        )}
       <div className="max-w-4xl mx-auto p-6 border rounded-lg shadow-md mt-32">
         <h2 className="text-center text-2xl font-bold mb-6 animate-fadeIn">Budget Manager</h2>
           {/* Budget Status Messages */}
@@ -468,24 +404,25 @@ const BudgetManager = () => {
           >
             Add New Budget
           </button>
-          {addSalary && (
-            <button
-              className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
-              onClick={() => setShowSalaryPopup(true)}
-            >
-              {getSalaryButtonText()}
-            </button>
-          )}
-
-    
-        {budgets.length > 0 && !addSalary && !isBudgetExpired && (
           <button
-            className="bg-rose-500 hover:bg-rose-600 text-white py-2 px-4 rounded-md"
-            onClick={handleResetBudgets}
+            className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
+            onClick={() => setShowSalaryPopup(true)} // Show salary popup
           >
-            Reset Budgets
+            {getSalaryButtonText()}
           </button>
-        )}
+
+          {budgets.length > 0 && expensesWithBudget.length > 0 && salary === 0 && (
+              <button
+                className={`text-white py-2 px-4 rounded-md ${
+                  theme === 'light'
+                    ? 'bg-rose-500 hover:bg-rose-600 '
+                    : 'bg-rose-700 hover:bg-rose-800 '
+                }`}
+                onClick={handleResetBudgetsClick}
+              >
+                Reset All Budgets
+              </button>
+            )}
         </div>
 
         {showAddPopup && (
@@ -567,7 +504,7 @@ const BudgetManager = () => {
           </div>
         ) : (
           <>
-            {noBudgetMessage && <div className={`text-center text-${theme === 'light' ? 'dark:text-gray-400' : 'gray-200'} mb-4`}>{noBudgetMessage}</div>}
+            {noBudgetMessage && <div className={`text-center text-${theme === 'light' ? 'dark:text-gray-400' : 'red-400'} mb-4`}>{noBudgetMessage}</div>}
 
             {budgetErrorMessage && (
               <div
