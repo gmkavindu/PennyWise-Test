@@ -11,6 +11,8 @@ import { GiTakeMyMoney } from "react-icons/gi";
 import { BiBox } from "react-icons/bi";
 import { TiThList } from 'react-icons/ti';
 import { Link } from 'react-router-dom';
+import ExpenseForm from './expenses/ExpenseForm';
+import Modal from './Modal/Modal';
 
 const Dashboard = () => {
   const [name, setName] = useState('');
@@ -18,6 +20,8 @@ const Dashboard = () => {
   const [expenses, setExpenses] = useState([]);
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expenseToEdit, setExpenseToEdit] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -52,6 +56,44 @@ const Dashboard = () => {
 
     fetchUserData();
   }, []);
+  const handleSaveExpense = async (expense) => {
+    try {
+      if (expense._id) {
+        await axios.put(`/api/expenses/${expense._id}`, expense, {
+          headers: {
+            'x-auth-token': localStorage.getItem('token'),
+          },
+        });
+      } else {
+        await axios.post('/api/expenses', expense, {
+          headers: {
+            'x-auth-token': localStorage.getItem('token'),
+          },
+        });
+      }
+      const expensesData = await fetchExpenses(); // Refresh expenses after save/update
+      setExpenses(expensesData);
+      setIsModalVisible(false); // Close the modal after saving/updating
+    } catch (error) {
+      console.error('Error saving expense:', error);
+    }
+  };
+
+  const handleAddExpense = () => {
+    setIsModalVisible(true); // Show the modal for adding expense
+    setExpenseToEdit(null); // Clear any existing edit state
+  };
+
+  const clearEdit = () => {
+    setExpenseToEdit(null);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setExpenseToEdit(null);
+  };
+
+
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme');
@@ -123,10 +165,18 @@ const Dashboard = () => {
         {expenses.length > 0 ? (
           <div className="flex flex-col md:flex-row mb-10 w-full">
             <div className="md:w-1/2 pr-4">
-              <h2 className="text-2xl font-semibold mb-6 flex items-center">
-                <TiThList className="mr-2 text-blue-500" />
-                Latest Expenses
-              </h2>
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-semibold flex items-center">
+                  <TiThList className="mr-2 text-blue-500" />
+                  Latest Expenses
+                </h2>
+                <button
+                  onClick={handleAddExpense}
+                  className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
+                >
+                  Add Expense
+                </button>
+              </div>
               <div className="flex flex-col items-center">
                 {expenses.length > 0 ? (
                   expenses
@@ -173,7 +223,19 @@ const Dashboard = () => {
             </div>
           </div>
         ) : (
-          <p className="text-gray-500 text-center dark:text-gray-400 mb-10">No expenses available. Please add some expenses.</p>
+          <>
+          <div className="flex flex-col items-center mb-6 space-y-4">
+            <p className="text-gray-500 text-center dark:text-gray-400 mb-2">
+              No expenses available. Please add some expenses.
+            </p>
+            <button
+              onClick={handleAddExpense}
+              className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-300"
+            >
+              Add Expense
+            </button>
+          </div>
+          </>
         )}
         {budgets.length > 0 ? (
           <div className="w-full">
@@ -207,6 +269,15 @@ const Dashboard = () => {
           </p>
         )}
       </div>
+
+      <Modal isVisible={isModalVisible} onClose={handleCloseModal}>
+        <ExpenseForm
+          onSave={handleSaveExpense}
+          expenseToEdit={expenseToEdit}
+          clearEdit={clearEdit}
+          onClose={handleCloseModal}
+        />
+      </Modal>
     </div>
   );
 };
