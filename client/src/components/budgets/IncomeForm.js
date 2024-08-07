@@ -79,8 +79,7 @@ const IncomeForm = ({ onSave, onClose, clearEdit, theme, initialIncomes = [] }) 
     if (income) {
       const newIncome = { category, amount: Number(income) };
       setIncomes([...incomes, newIncome]);
-      setIncome(''); // Clear income amount field after adding
-      setCustomPeriod('');
+      setIncome('');
     }
   };
 
@@ -170,6 +169,41 @@ const IncomeForm = ({ onSave, onClose, clearEdit, theme, initialIncomes = [] }) 
               </button>
             </div>
           </div>
+
+          <div className="flex justify-end mb-4">
+            
+            <button type="button" className={`py-2 px-4 rounded-md ${theme === 'light' ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`} onClick={handleResetIncome}>
+              Reset Income
+            </button>
+            <button type="button" className={`py-2 px-4 rounded-md ml-2 ${theme === 'light' ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`} onClick={handleAddIncome}>
+              Add Income
+            </button>
+          </div>
+          <div className="mb-4">
+            <h3 className={`text-lg font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Added Incomes</h3>
+            {incomes.length > 0 ? (
+              <ul className="list-disc list-inside">
+                {incomes.map((inc, index) => (
+                  <li key={index} className="flex justify-between items-center mb-2">
+                    <span>{inc.category}: RS. {inc.amount}</span>
+                    <button type="button" className={`py-1 px-2 rounded-md ${theme === 'light' ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`} onClick={() => handleRemoveIncome(index)}>
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={`text-sm ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>No incomes added yet.</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <span className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
+              Total Income: RS. {totalIncome}
+            </span>
+          </div>
+          
+
+
           <div className="mb-4">
             <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`} htmlFor="period">
               Budget Period
@@ -234,37 +268,7 @@ const IncomeForm = ({ onSave, onClose, clearEdit, theme, initialIncomes = [] }) 
               readOnly
             />
           </div>
-          <div className="flex justify-end mb-4">
-            
-            <button type="button" className={`py-2 px-4 rounded-md ${theme === 'light' ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`} onClick={handleResetIncome}>
-              Reset Income
-            </button>
-            <button type="button" className={`py-2 px-4 rounded-md ml-2 ${theme === 'light' ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`} onClick={handleAddIncome}>
-              Add Income
-            </button>
-          </div>
-          <div className="mb-4">
-            <h3 className={`text-lg font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Added Incomes</h3>
-            {incomes.length > 0 ? (
-              <ul className="list-disc list-inside">
-                {incomes.map((inc, index) => (
-                  <li key={index} className="flex justify-between items-center mb-2">
-                    <span>{inc.category}: RS. {inc.amount}</span>
-                    <button type="button" className={`py-1 px-2 rounded-md ${theme === 'light' ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`} onClick={() => handleRemoveIncome(index)}>
-                      Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={`text-sm ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>No incomes added yet.</p>
-            )}
-          </div>
-          <div className="mb-4">
-            <span className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
-              Total Income: RS. {totalIncome}
-            </span>
-          </div>
+  
           <div className="flex justify-end">
             
             <button type="button" className={`py-2 px-4 rounded-md ${theme === 'light' ? 'bg-gray-500 hover:bg-gray-600 text-white' : 'bg-gray-600 hover:bg-gray-700 text-white'}`} onClick={onClose}>
