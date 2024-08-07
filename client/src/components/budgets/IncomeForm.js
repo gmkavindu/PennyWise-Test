@@ -235,11 +235,12 @@ const IncomeForm = ({ onSave, onClose, clearEdit, theme, initialIncomes = [] }) 
             />
           </div>
           <div className="flex justify-end mb-4">
-            <button type="button" className={`py-2 px-4 rounded-md mr-2 ${theme === 'light' ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`} onClick={handleAddIncome}>
-              Add Income
-            </button>
+            
             <button type="button" className={`py-2 px-4 rounded-md ${theme === 'light' ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`} onClick={handleResetIncome}>
               Reset Income
+            </button>
+            <button type="button" className={`py-2 px-4 rounded-md ml-2 ${theme === 'light' ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`} onClick={handleAddIncome}>
+              Add Income
             </button>
           </div>
           <div className="mb-4">
@@ -248,7 +249,7 @@ const IncomeForm = ({ onSave, onClose, clearEdit, theme, initialIncomes = [] }) 
               <ul className="list-disc list-inside">
                 {incomes.map((inc, index) => (
                   <li key={index} className="flex justify-between items-center mb-2">
-                    <span>{inc.category}: ${inc.amount}</span>
+                    <span>{inc.category}: RS. {inc.amount}</span>
                     <button type="button" className={`py-1 px-2 rounded-md ${theme === 'light' ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`} onClick={() => handleRemoveIncome(index)}>
                       Remove
                     </button>
@@ -261,7 +262,7 @@ const IncomeForm = ({ onSave, onClose, clearEdit, theme, initialIncomes = [] }) 
           </div>
           <div className="mb-4">
             <span className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
-              Total Income: ${totalIncome}
+              Total Income: RS. {totalIncome}
             </span>
           </div>
           <div className="flex justify-end">
