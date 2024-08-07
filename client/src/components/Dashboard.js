@@ -185,8 +185,12 @@ const Dashboard = () => {
                     .map((expense) => (
                       <div
                         key={expense._id}
-                        className={`w-full max-w-lg rounded-lg shadow-md p-4 mb-4 transition-all duration-500 ease-in-out transform hover:scale-105 text-gray-800 font-bold`}
-                        style={{ backgroundColor: getCategoryColor(budgetCategoryMap[expense.budget]) }}
+                        className={`w-full max-w-lg rounded-lg shadow-md p-4 mb-4 transition-all duration-500 ease-in-out transform hover:scale-105 text-gray-800 font-bold ${
+                          expense.budget === null ? 'bg-red-200' : ''
+                        }`}
+                        style={{
+                          backgroundColor: expense.budget !== null ? getCategoryColor(budgetCategoryMap[expense.budget]) : undefined,
+                        }}
                       >
                         <p className="text-lg flex items-center">
                           {/* Conditionally render icon based on description */}
