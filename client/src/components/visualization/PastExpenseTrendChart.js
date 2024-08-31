@@ -38,7 +38,10 @@ const PastExpenseTrendChart = ({ startDate }) => {
 
         // Group expenses by date
         const groupedExpenses = filteredExpenses.reduce((acc, expense) => {
-          const dateKey = new Date(expense.date).toLocaleDateString(); // Format date as MM/DD/YYYY
+          const dateKey = new Date(expense.date).toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: '2-digit',
+          }); // Format date as dd/mm
           if (!acc[dateKey]) {
             acc[dateKey] = {
               totalAmount: 0,

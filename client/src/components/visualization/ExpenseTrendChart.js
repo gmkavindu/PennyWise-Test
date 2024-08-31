@@ -7,7 +7,7 @@ const ExpenseTrendChart = () => {
   const [theme, setTheme] = useState('light');
   const [dataEmpty, setDataEmpty] = useState(false);
   const [expenseDetails, setExpenseDetails] = useState({});
-  const [timePeriod, setTimePeriod] = useState('3 months'); // Default time period
+  const [timePeriod, setTimePeriod] = useState('1 month'); // Default time period
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -59,7 +59,10 @@ const ExpenseTrendChart = () => {
 
         // Group expenses by date
         const groupedExpenses = filteredExpenses.reduce((acc, expense) => {
-          const dateKey = new Date(expense.date).toLocaleDateString(); // Format date as MM/DD/YYYY
+          const dateKey = new Date(expense.date).toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: '2-digit',
+          }); // Format date as dd/mm
           if (!acc[dateKey]) {
             acc[dateKey] = {
               totalAmount: 0,
