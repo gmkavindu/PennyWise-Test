@@ -34,26 +34,19 @@ const getFinancialTips = async (req, res) => {
     // Generate financial tips based on user data
     const tips = await generateFinancialTips(userData);
 
-    // Update user's last generated tips and timestamp using findByIdAndUpdate to avoid versioning issues
-    await User.findByIdAndUpdate(req.user.id, {
-      lastGeneratedTips: tips,
-      tipsGeneratedAt: new Date()
-    });
+    // Update user's last generated tips and timestamp
+    user.lastGeneratedTips = tips;
+    user.tipsGeneratedAt = new Date();
+    await user.save();
 
     // Respond with the generated tips
     res.json({ tips });
-    
   } catch (err) {
-    if (err instanceof mongoose.Error.VersionError) {
-      // Handle versioning error specifically if needed
-      console.error('Version conflict detected:', err);
-      return res.status(409).json({ message: 'Conflict detected. Please try again.' });
-    }
-    console.error('Error generating financial tips:', err);
+    // Handle errors
+    
     res.status(500).json({ message: 'Server Error' });
   }
 };
-
 
 // Reloads financial tips manually, triggering the regeneration process
 const reloadFinancialTips = async (req, res) => {
