@@ -327,6 +327,7 @@ const BudgetManager = () => {
   const handleConfirmReset = async () => {
     setShowConfirmReset(false); // Hide confirmation dialog
     await handleResetBudgets();
+    window.location.reload();
   };
 
   const handleCancelReset = () => {
