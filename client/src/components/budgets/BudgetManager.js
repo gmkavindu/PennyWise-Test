@@ -90,7 +90,6 @@ const BudgetManager = () => {
     const fetchIncomeData = async () => {
       try {
         const incomeData = await fetchIncomeDetails();
-        console.log('Fetched income data:', incomeData); // Log the data for inspection
     
         // Check if incomeData and incomeData.categories are defined and are arrays
         if (incomeData && Array.isArray(incomeData.categories)) {
@@ -104,10 +103,8 @@ const BudgetManager = () => {
           setStartDate(incomeData.details.startDate);
           setIncomeDetails(incomeData.categories); // Update this to use categories
         } else {
-          console.error('Income details not found or is not an array:', incomeData);
         }
       } catch (error) {
-        console.error('Error fetching income details:', error);
       }
     };
     
